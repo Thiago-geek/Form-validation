@@ -1,5 +1,5 @@
-# Form-validation
-Hands-on project showing how to implement form validations using HTML, CSS, and JavaScript. Ideal for learning about dynamic validations, error handling, and accessible form design.
+# Validación de formularios de datos
+Antes de enviar datos al servidor, es importante asegurarse de que se completen todos los controles de formulario requeridos, y en el formato correcto. Esto se denomina validación de formulario en el lado del cliente y ayuda a garantizar que los datos que se envían coinciden con los requisitos establecidos en los diversos controles de formulario.
 
 # ¿Qué es la validación de formularios?
 Ve a cualquier sitio web popular que incluya un formulario de registro y observa que proporciones comentarios cuando no introduzcas tus datos en el formato que se espera. Recibirás mensajes como:
