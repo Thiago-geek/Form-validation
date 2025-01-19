@@ -1,7 +1,6 @@
     * {
       margin: 0;
       padding: 0;
-      /* font-family: sans-serif; */
       box-sizing: border-box;
     }
 
@@ -28,7 +27,6 @@
     }
 
     .illustration {
-      /* background: linear-gradient(135deg, #6f72ff, #9f9cff); */
       display: flex;
       align-items: center;
       justify-content: center;
