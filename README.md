@@ -351,3 +351,111 @@ Cada vez que intentamos enviar el formulario, verificamos nuevamente si los dato
 La función `showError()` usa varias propiedades de la entrada `validity` para determinar cuál es el error y luego muestra un mensaje de error según corresponda.
 
 La API de validación de restricciones te proporciona una herramienta poderosa para manejar la validación de formularios, y te permite tener un control enorme sobre la interfaz de usuario más allá de lo que puedas hacer solo con HTML y CSS.
+
+# Validar formularios sin una API incorporada
+En algunos casos, como la compatibilidad heredada del navegador o los controles personalizados , no podrás o no querrás usar la API de validación de restricciones. Todavía puedes usar JavaScript para validar tu formulario, pero vas a tener que escribirlo.
+
+Antes de validar el formulario, hazte estas preguntas:
+
+¿Qué tipo de validación debería realizar?
+* Debes determinar cómo validar los datos: operaciones de cadena, conversión de tipos, expresiones regulares, etc. Tú decides.
+
+¿Qué debería hacer si el formulario no se valida?
+* Esto es claramente un problema de la interfaz de usuario. Tienes que decidir cómo se comportará el formulario. ¿El formulario va a enviar los datos de todos los modos? ¿Deberías resaltar los campos que dan error? ¿Deberías mostrar mensajes de error?
+
+# Un ejemplo que no usa la API de validación de restricciones
+Para ilustrar esto, mostramos una versión simplificada del ejemplo anterior que funciona con navegadores con compatibilidad heredada.
+
+El HTML es casi el mismo; Solo hemos eliminado las funciones de validación de HTML.
+
+```html
+<form>
+  <p>
+    <label for="mail">
+      <span>Por favor, introduzca una dirección de correo electrónico: </span>
+      <input type="text" class="mail" id="mail" name="mail" />
+      <span class="error" aria-live="polite"></span>
+    </label>
+  </p>
+  <!-- Algunos navegadores con compatibilidad heredada deben tener el atributo «type»
+       establecido explícitamente en el elemento «button» de «submit»-->
+  <button type="submit">Enviar</button>
+</form>
+```
+
+```javascript
+// Hay menos formas de elegir un nodo DOM con navegadores antiguos
+const form = document.getElementsByTagName("form")[0];
+const email = document.getElementById("mail");
+
+// Lo siguiente es un truco para llegar al siguiente nodo de elementos hermanos en el DOM
+// Esto es peligroso porque puedes construir fácilmente un bucle infinito.
+// En los navegadores modernos es mejor usar element.nextElementSibling
+let error = email;
+while ((error = error.nextSibling).nodeType != 1);
+
+// según la especificación HTML5
+const emailRegExp =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+// Muchos navegadores antiguos no son compatibles con el método addEventListener.
+// Aquí hay una manera simple de manejar esto; está lejos de ser la única.
+function addEvent(element, event, callback) {
+  let previousEventCallBack = element["on" + event];
+  element["on" + event] = function (e) {
+    const output = callback(e);
+
+    // Una devolución de llamada que devuelve «false» detiene la cadena de devolución de llamada
+    // e interrumpe la ejecución de la devolución de llamada del evento.
+    if (output === false) return false;
+
+    if (typeof previousEventCallBack === "function") {
+      output = previousEventCallBack(e);
+      if (output === false) return false;
+    }
+  };
+}
+
+// Ahora podemos reconstruir nuestra restricción de validación
+// Debido a que no confiamos en la pseudoclase de CSS, tenemos que
+// establecer explícitamente la clase valid/invalid en nuestro campo de correo electrónico
+addEvent(window, "load", function () {
+  // Aquí probamos si el campo está vacío (recuerda, el campo no es obligatorio)
+  // Si no es así, verificamos si su contenido es una dirección de correo electrónico con el formato correcto.
+  const test = email.value.length === 0 || emailRegExp.test(email.value);
+
+  email.className = test ? "valid" : "invalid";
+});
+
+// Esto define lo que sucede cuando el usuario escribe en el campo
+addEvent(email, "input", function () {
+  const test = email.value.length === 0 || emailRegExp.test(email.value);
+  if (test) {
+    email.className = "valid";
+    error.innerHTML = "";
+    error.className = "error";
+  } else {
+    email.className = "invalid";
+  }
+});
+
+// Esto define lo que sucede cuando el usuario intenta enviar los datos.
+addEvent(form, "submit", function () {
+  const test = email.value.length === 0 || emailRegExp.test(email.value);
+
+  if (!test) {
+    email.className = "invalid";
+    error.innerHTML = "Espero un correo electrónico, querido!";
+    error.className = "error active";
+
+    // Algunos navegadores antiguos no son compatibles con el método event.preventDefault ()
+    return false;
+  } else {
+    email.className = "valid";
+    error.innerHTML = "";
+    error.className = "error";
+  }
+});
+```
+
+Como puedes ver, no es tan difícil construir un sistema de validación por tu cuenta. La parte difícil es hacer que sea lo suficientemente genérico para que se pueda usar en diferentes plataformas y en cualquier forma.

@@ -18,15 +18,15 @@
       <form>
         <div class="form-group">
           <label for="email">Email</label>
-          <input type="email" id="mail" placeholder="Ingresa tu correo" minlength="1" maxlength="100">
+          <input type="email" id="mail" placeholder="Ingresa tu correo">
         </div>
         <div class="form-group">
           <label for="password">Crear contraseña</label>
-          <input type="password" id="password" placeholder="contraseña" minlength="1" maxlength="10">
+          <input type="password" id="password" placeholder="contraseña" required minlength="8">
         </div>
         <div class="form-group">
           <label for="repeat-password">Repetir contraseña</label>
-          <input type="password" id="repeat-password" placeholder="Repite tu contraseña">
+          <input type="password" id="repeat-password" placeholder="Repite tu contraseña" required minlength="8">
         </div>
         <div class="checkbox-group">
           <input type="checkbox" id="terms">
@@ -34,6 +34,7 @@
         </div>
         <button class="btn" type="submit">Crear cuenta</button>
       </form>
+      <div id="mensaje" style="color: red; margin-top: 20px;"></div>
       <div class="login-link">
         <p>¿Ya tienes una cuenta? <a href="#">Ingresar</a></p>
       </div>
